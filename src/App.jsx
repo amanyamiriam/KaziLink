@@ -1,4 +1,4 @@
-import { Link, NavLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { submitAuth } from './auth.js';
@@ -149,7 +149,13 @@ function App() {
   const [messages, setMessages] = useState(() => readStorage(STORAGE_KEYS.messages, defaultMessages));
   const [currentUser, setCurrentUser] = useState(() => readStorage(STORAGE_KEYS.currentUser, null));
   const [theme, setTheme] = useState(() => readStorage(STORAGE_KEYS.theme, 'light'));
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/jobs`)
@@ -271,35 +277,49 @@ function App() {
               <span className="brand-name">KaziLink</span>
               <small className="brand-tag">Built for Kenya</small>
             </div>
+
+            <button
+              type="button"
+              className={`mobile-menu-toggle ${mobileMenuOpen ? 'open' : ''}`}
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
           </div>
 
-          <nav className="main-nav" aria-label="Main navigation">
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/jobs">Browse Jobs</NavLink>
-            <NavLink to="/post-job">Post a Job</NavLink>
-            <NavLink to="/freelancer-profile">Freelancer</NavLink>
-            <NavLink to="/dashboard">Dashboard</NavLink>
-            <NavLink to="/messaging">Messaging</NavLink>
-          </nav>
+          <div className={`header-menu ${mobileMenuOpen ? 'open' : ''}`}>
+            <nav className="main-nav" aria-label="Main navigation">
+              <NavLink to="/">Home</NavLink>
+              <NavLink to="/jobs">Browse Jobs</NavLink>
+              <NavLink to="/post-job">Post a Job</NavLink>
+              <NavLink to="/freelancer-profile">Freelancer</NavLink>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/messaging">Messaging</NavLink>
+            </nav>
 
-          <div className="actions">
-            <button
-              className="btn btn-ghost icon-btn"
-              type="button"
-              onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-              aria-label="Toggle dark mode"
-            >
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
-            {currentUser ? (
-              <>
-                <span className="user-pill">Hi, {currentUser.name.split(' ')[0]}</span>
-                <button type="button" className="btn btn-ghost" onClick={handleLogout}>Log out</button>
-              </>
-            ) : (
-              <Link className="btn btn-ghost" to="/auth">Log in</Link>
-            )}
-            <Link className="btn btn-primary" to="/post-job">Post a Job</Link>
+            <div className="actions">
+              <button
+                className="btn btn-ghost icon-btn"
+                type="button"
+                onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+                aria-label="Toggle dark mode"
+              >
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
+              {currentUser ? (
+                <>
+                  <span className="user-pill">Hi, {currentUser.name.split(' ')[0]}</span>
+                  <button type="button" className="btn btn-ghost" onClick={handleLogout}>Log out</button>
+                </>
+              ) : (
+                <Link className="btn btn-ghost" to="/auth">Log in</Link>
+              )}
+              <Link className="btn btn-primary" to="/post-job">Post a Job</Link>
+            </div>
           </div>
         </header>
 
