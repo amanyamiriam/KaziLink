@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { submitAuth } from './auth.js';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:4000');
 
 const categories = [
   { name: 'Web Development', icon: '💻', jobs: '248 jobs' },
@@ -81,6 +81,22 @@ const defaultMessages = [
   { name: 'Grace M.', preview: 'Can we confirm the final payment milestone?', unread: 1, status: 'Online' },
 ];
 
+const defaultNotifications = [
+  { id: 1, text: 'Someone applied for your website redesign job.', time: '2h ago', type: 'application' },
+  { id: 2, text: 'Your proposal was shortlisted for the branding brief.', time: '5h ago', type: 'shortlist' },
+  { id: 3, text: 'A client sent you a new message about the homepage content.', time: '1d ago', type: 'message' },
+  { id: 4, text: 'Payment received for the social media manager project.', time: '2d ago', type: 'payment' },
+];
+
+const defaultSavedJobs = [1, 3];
+
+const marketplaceServices = [
+  { title: 'Logo Design', provider: 'Miriam Creative', rating: 4.9, price: 'From KSh 3,000', description: 'Professional logo design for startups and SMEs.', accent: 'purple' },
+  { title: 'Website Development', provider: 'John Mwangi', rating: 4.8, price: 'From KSh 25,000', description: 'Responsive business websites and landing pages.', accent: 'blue' },
+  { title: 'Social Media Setup', provider: 'Nia Studio', rating: 4.9, price: 'From KSh 8,000', description: 'Branding, content planning and campaign setup.', accent: 'orange' },
+  { title: 'Brand Strategy', provider: 'KibokoLabs', rating: 4.7, price: 'From KSh 12,000', description: 'Positioning, messaging and identity guidance.', accent: 'green' },
+];
+
 const defaultConversation = [
   { from: 'them', text: 'Hi! I can help with the website redesign. Can you share your preferred colors and content?' },
   { from: 'me', text: 'Yes, I want a modern tone with green and white branding. We can also add a contact form.' },
@@ -116,10 +132,82 @@ const testimonials = [
 ];
 
 const topFreelancers = [
-  { name: 'Mercy Achieng', role: 'Web Designer', rating: '4.9', jobs: '132', price: 'KSh 3,500/h', location: 'Nairobi', specialty: 'UI/UX + branding', accent: 'purple' },
-  { name: 'Kelvin Otieno', role: 'Photographer', rating: '4.8', jobs: '89', price: 'KSh 6,000/session', location: 'Kisumu', specialty: 'Events & product shots', accent: 'orange' },
-  { name: 'Lucy Njeri', role: 'Virtual Assistant', rating: '4.9', jobs: '204', price: 'KSh 2,200/h', location: 'Remote', specialty: 'Data entry & admin', accent: 'green' },
-  { name: 'James Wambua', role: 'Electrician', rating: '4.7', jobs: '97', price: 'KSh 2,800/visit', location: 'Nairobi', specialty: 'Wiring & repairs', accent: 'blue' },
+  {
+    name: 'Mercy Achieng',
+    role: 'Web Designer & Graphic Designer',
+    rating: '4.9',
+    jobs: '132',
+    price: 'KSh 3,500/h',
+    location: 'Nairobi, Kenya',
+    specialty: 'UI/UX + branding',
+    accent: 'purple',
+    verified: true,
+    availability: 'Available',
+    verifiedSince: 'Jan 2024',
+    emailVerified: true,
+    phoneVerified: true,
+    idVerified: true,
+    skillVerified: true,
+    businessVerified: true,
+    reviews: 28,
+  },
+  {
+    name: 'Kelvin Otieno',
+    role: 'Photographer',
+    rating: '4.8',
+    jobs: '89',
+    price: 'KSh 6,000/session',
+    location: 'Kisumu',
+    specialty: 'Events & product shots',
+    accent: 'orange',
+    verified: true,
+    availability: 'Busy',
+    verifiedSince: 'Mar 2024',
+    emailVerified: true,
+    phoneVerified: true,
+    idVerified: true,
+    skillVerified: true,
+    businessVerified: false,
+    reviews: 19,
+  },
+  {
+    name: 'Lucy Njeri',
+    role: 'Virtual Assistant',
+    rating: '4.9',
+    jobs: '204',
+    price: 'KSh 2,200/h',
+    location: 'Remote',
+    specialty: 'Data entry & admin',
+    accent: 'green',
+    verified: true,
+    availability: 'Available',
+    verifiedSince: 'Jun 2023',
+    emailVerified: true,
+    phoneVerified: true,
+    idVerified: true,
+    skillVerified: true,
+    businessVerified: true,
+    reviews: 41,
+  },
+  {
+    name: 'James Wambua',
+    role: 'Electrician',
+    rating: '4.7',
+    jobs: '97',
+    price: 'KSh 2,800/visit',
+    location: 'Nairobi',
+    specialty: 'Wiring & repairs',
+    accent: 'blue',
+    verified: true,
+    availability: 'Not available',
+    verifiedSince: 'Aug 2024',
+    emailVerified: true,
+    phoneVerified: true,
+    idVerified: false,
+    skillVerified: true,
+    businessVerified: false,
+    reviews: 14,
+  },
 ];
 
 function readStorage(key, fallback) {
@@ -150,6 +238,8 @@ function App() {
   const [currentUser, setCurrentUser] = useState(() => readStorage(STORAGE_KEYS.currentUser, null));
   const [theme, setTheme] = useState(() => readStorage(STORAGE_KEYS.theme, 'light'));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [savedJobs, setSavedJobs] = useState(() => readStorage('kazilink_saved_jobs', defaultSavedJobs));
+  const [notifications, setNotifications] = useState(() => readStorage('kazilink_notifications', defaultNotifications));
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -178,6 +268,14 @@ function App() {
   useEffect(() => {
     writeStorage(STORAGE_KEYS.messages, messages);
   }, [messages]);
+
+  useEffect(() => {
+    writeStorage('kazilink_saved_jobs', savedJobs);
+  }, [savedJobs]);
+
+  useEffect(() => {
+    writeStorage('kazilink_notifications', notifications);
+  }, [notifications]);
 
   useEffect(() => {
     if (currentUser) {
@@ -267,6 +365,12 @@ function App() {
     navigate('/');
   };
 
+  const handleSaveJob = (jobId) => {
+    setSavedJobs((prev) => prev.includes(jobId)
+      ? prev.filter((value) => value !== jobId)
+      : [...prev, jobId]);
+  };
+
   return (
     <div className={`app-shell ${theme === 'dark' ? 'theme-dark' : 'theme-light'}`}>
       <div className="page-shell">
@@ -325,14 +429,14 @@ function App() {
 
         <main className="app-content">
           <Routes>
-            <Route path="/" element={<HomePage jobs={jobs} />} />
+            <Route path="/" element={<HomePage jobs={jobs} services={marketplaceServices} />} />
             <Route path="/auth" element={currentUser ? <Navigate to="/dashboard" replace /> : <AuthPage onLogin={handleLogin} onSignup={handleSignup} />} />
-            <Route path="/jobs" element={<JobsPage jobs={jobs} />} />
-            <Route path="/job-details/:id" element={<JobDetailsPage jobs={jobs} />} />
+            <Route path="/jobs" element={<JobsPage jobs={jobs} savedJobs={savedJobs} onSaveJob={handleSaveJob} />} />
+            <Route path="/job-details/:id" element={<JobDetailsPage jobs={jobs} savedJobs={savedJobs} onSaveJob={handleSaveJob} />} />
             <Route path="/job-details" element={<Navigate to={`/job-details/${jobs[0]?.id ?? 1}`} replace />} />
             <Route path="/post-job" element={currentUser ? <PostJobPage onCreateJob={handleCreateJob} /> : <Navigate to="/auth" replace />} />
             <Route path="/freelancer-profile" element={<FreelancerProfilePage />} />
-            <Route path="/dashboard" element={currentUser ? <DashboardPage jobs={jobs} currentUser={currentUser} /> : <Navigate to="/auth" replace />} />
+            <Route path="/dashboard" element={currentUser ? <DashboardPage jobs={jobs} currentUser={currentUser} notifications={notifications} /> : <Navigate to="/auth" replace />} />
             <Route path="/messaging" element={currentUser ? <MessagingPage messages={messages} currentUser={currentUser} /> : <Navigate to="/auth" replace />} />
           </Routes>
         </main>
@@ -435,7 +539,7 @@ function AuthPage({ onLogin, onSignup }) {
   );
 }
 
-function HomePage({ jobs }) {
+function HomePage({ jobs, services }) {
   return (
     <>
       <section className="hero section">
@@ -521,6 +625,32 @@ function HomePage({ jobs }) {
         </div>
       </section>
 
+      <section className="section trust-section">
+        <div className="section-heading center">
+          <span className="eyebrow">Why KaziLink?</span>
+          <h2>Built to feel trustworthy, commercial, and scalable</h2>
+        </div>
+
+        <div className="trust-grid">
+          <div className="trust-panel">
+            <h3>✓ Verified professionals</h3>
+            <p>Phone, email and profile verification help clients hire with more confidence.</p>
+          </div>
+          <div className="trust-panel">
+            <h3>✓ Local & remote</h3>
+            <p>Hire someone in Nairobi or work with remote specialists across Kenya.</p>
+          </div>
+          <div className="trust-panel">
+            <h3>✓ Transparent pricing</h3>
+            <p>Costs, fees and milestones are visible before work starts.</p>
+          </div>
+          <div className="trust-panel">
+            <h3>✓ Secure communication</h3>
+            <p>Projects and conversations stay inside the platform until the work is approved.</p>
+          </div>
+        </div>
+      </section>
+
       <section id="jobs" className="section">
         <div className="section-heading">
           <div>
@@ -546,6 +676,34 @@ function HomePage({ jobs }) {
               <div className="job-footer">
                 <small>{job.posted}</small>
                 <Link className="btn btn-primary small" to={`/job-details/${job.id}`}>Apply</Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section marketplace-section">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">Services marketplace</span>
+            <h2>Browse services, not just jobs</h2>
+          </div>
+          <Link className="btn btn-ghost" to="/jobs">View marketplace</Link>
+        </div>
+
+        <div className="services-grid">
+          {services.map((service) => (
+            <article key={service.title} className={`service-card ${service.accent}`}>
+              <div className="service-top">
+                <span className="service-badge">Service</span>
+                <span className="service-rating">⭐ {service.rating}</span>
+              </div>
+              <h3>{service.title}</h3>
+              <p>{service.provider}</p>
+              <small>{service.description}</small>
+              <div className="service-bottom">
+                <strong>{service.price}</strong>
+                <button type="button" className="btn btn-primary small">View Service</button>
               </div>
             </article>
           ))}
@@ -654,7 +812,7 @@ function HomePage({ jobs }) {
   );
 }
 
-function JobsPage({ jobs }) {
+function JobsPage({ jobs, savedJobs, onSaveJob }) {
   return (
     <section className="page-section">
       <div className="page-header">
@@ -702,12 +860,25 @@ function JobsPage({ jobs }) {
         </div>
       </div>
 
+      <div className="status-legend">
+        <span><em className="status-dot open" /> Open</span>
+        <span><em className="status-dot reviewing" /> Reviewing</span>
+        <span><em className="status-dot hired" /> Hired</span>
+        <span><em className="status-dot completed" /> Completed</span>
+      </div>
+
       <div className="jobs-grid jobs-page-grid">
         {jobs.map((job) => (
           <article key={job.id} className="job-card detail-card">
             <div className="job-topline">
               <span className="tag">{job.category}</span>
               <span className="tag soft">{job.type}</span>
+            </div>
+            <div className="job-status-row">
+              <span className={`job-status ${job.status || 'open'}`}>{job.status || 'Open'}</span>
+              <button type="button" className="save-button" onClick={() => onSaveJob(job.id)}>
+                {savedJobs.includes(job.id) ? '♥ Saved' : '♡ Save'}
+              </button>
             </div>
             <h3>{job.title}</h3>
             <p>{job.description}</p>
@@ -727,7 +898,7 @@ function JobsPage({ jobs }) {
   );
 }
 
-function JobDetailsPage({ jobs }) {
+function JobDetailsPage({ jobs, savedJobs, onSaveJob }) {
   const routeId = window.location.pathname.split('/').pop();
   const jobId = routeId && routeId !== 'job-details' ? routeId : jobs[0]?.id;
   const job = jobs.find((entry) => String(entry.id) === String(jobId)) || jobs[0];
@@ -767,7 +938,39 @@ function JobDetailsPage({ jobs }) {
 
           <div className="detail-actions">
             <button className="btn btn-primary" type="button">Apply for Job</button>
-            <button className="btn btn-ghost" type="button">Save</button>
+            <button className="btn btn-ghost" type="button" onClick={() => onSaveJob(job.id)}>
+              {savedJobs.includes(job.id) ? 'Saved' : 'Save'}
+            </button>
+          </div>
+
+          <div className="proposal-panel">
+            <h3>Submit proposal</h3>
+            <div className="proposal-form-grid">
+              <div className="field">
+                <label>Proposal</label>
+                <textarea rows="3" defaultValue="I can design your business website within 10 days." />
+              </div>
+              <div className="field">
+                <label>My price</label>
+                <input type="text" defaultValue="KSh 35,000" />
+              </div>
+              <div className="field">
+                <label>Delivery</label>
+                <input type="text" defaultValue="10 days" />
+              </div>
+              <div className="field">
+                <label>Revisions</label>
+                <input type="text" defaultValue="3" />
+              </div>
+            </div>
+            <div className="field">
+              <label>Message</label>
+              <textarea rows="3" defaultValue="I can share a clear timeline, examples and updates throughout the project." />
+            </div>
+            <div className="proposal-actions">
+              <button className="btn btn-primary" type="button">Submit proposal</button>
+              <button className="btn btn-ghost" type="button">Shortlist later</button>
+            </div>
           </div>
         </div>
 
@@ -789,6 +992,10 @@ function JobDetailsPage({ jobs }) {
             <div className="snapshot-row">
               <span>Applicants</span>
               <strong>{job.applicants}</strong>
+            </div>
+            <div className="snapshot-row">
+              <span>Status</span>
+              <strong>{job.status || 'Open'}</strong>
             </div>
           </div>
         </aside>
@@ -894,7 +1101,7 @@ function FreelancerProfilePage() {
           <div className="avatar mega">MA</div>
           <div>
             <span className="eyebrow">Freelancer profile</span>
-            <h2>{freelancer.name}</h2>
+            <h2>{freelancer.name} <span className="verified-mark">✓ Verified</span></h2>
             <p>{freelancer.role}</p>
           </div>
           <button className="btn btn-primary" type="button">Hire Me</button>
@@ -907,6 +1114,16 @@ function FreelancerProfilePage() {
           <div><strong>KSh 3,500/h</strong><span>Starting price</span></div>
         </div>
 
+        <div className="verification-list">
+          <span className="verification-pill">📞 Verified phone</span>
+          <span className="verification-pill">✉️ Verified email</span>
+          <span className="verification-pill">🪪 ID verified</span>
+          <span className="verification-pill">✅ Profile verified</span>
+          <span className="verification-pill">🎯 Skill verification</span>
+          <span className="verification-pill">🏢 Business verification</span>
+          <span className="verification-pill">📅 Verified since {freelancer.verifiedSince}</span>
+        </div>
+
         <div className="profile-details-grid">
           <div className="detail-panel">
             <h3>About</h3>
@@ -915,12 +1132,29 @@ function FreelancerProfilePage() {
             </p>
           </div>
           <div className="detail-panel">
-            <h3>Portfolio</h3>
+            <h3>Availability</h3>
+            <p className={`availability-badge ${freelancer.availability.toLowerCase().replace(/\s+/g, '-')}`}>
+              {freelancer.availability === 'Available' ? '🟢 Available' : freelancer.availability === 'Busy' ? '🟡 Busy' : '🔴 Not available'}
+            </p>
             <div className="portfolio-pills">
               <span>Brand identity</span>
               <span>E-commerce</span>
               <span>Landing pages</span>
               <span>UI systems</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="review-block">
+          <h3>Client reviews</h3>
+          <div className="review-item">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p>“Very professional and delivered before the deadline.”</p>
+            <div className="review-metrics">
+              <span>Quality: 5/5</span>
+              <span>Communication: 5/5</span>
+              <span>Timeliness: 5/5</span>
+              <span>Professionalism: 5/5</span>
             </div>
           </div>
         </div>
@@ -931,17 +1165,19 @@ function FreelancerProfilePage() {
           <h3>Profile details</h3>
           <div className="snapshot-row"><span>Location</span><strong>{freelancer.location}</strong></div>
           <div className="snapshot-row"><span>Skills</span><strong>UI/UX, Web, Brand</strong></div>
-          <div className="snapshot-row"><span>Reviews</span><strong>48 positive</strong></div>
+          <div className="snapshot-row"><span>Reviews</span><strong>{freelancer.reviews} positive</strong></div>
           <div className="snapshot-row"><span>Response time</span><strong>Within 1 hour</strong></div>
+          <div className="snapshot-row"><span>WhatsApp</span><strong>Chat on WhatsApp</strong></div>
         </div>
       </aside>
     </section>
   );
 }
 
-function DashboardPage({ jobs, currentUser }) {
+function DashboardPage({ jobs, currentUser, notifications }) {
   const totalJobs = jobs.length;
   const activeJobs = jobs.filter((job) => job.applicants > 0).length;
+  const isAdmin = currentUser?.email === 'admin@kazilink.co.ke';
 
   return (
     <section className="page-section">
@@ -983,6 +1219,23 @@ function DashboardPage({ jobs, currentUser }) {
         </div>
 
         <div className="detail-panel">
+          <h3>Notifications 🔔</h3>
+          <div className="notification-list">
+            {notifications.map((item) => (
+              <div key={item.id} className="notification-item">
+                <span className={`notification-dot ${item.type}`} />
+                <div>
+                  <strong>{item.text}</strong>
+                  <small>{item.time}</small>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="dashboard-panels">
+        <div className="detail-panel">
           <h3>{currentUser.role === 'freelancer' ? 'Freelancer tools' : 'Client tools'}</h3>
           <div className="mini-progress-list">
             <div className="progress-item">
@@ -999,6 +1252,18 @@ function DashboardPage({ jobs, currentUser }) {
             </div>
           </div>
         </div>
+
+        {isAdmin && (
+          <div className="detail-panel admin-panel">
+            <h3>Admin controls</h3>
+            <ul className="activity-list">
+              <li>Verify freelancer profiles</li>
+              <li>Review dispute tickets</li>
+              <li>Approve featured jobs</li>
+              <li>Review platform fees and escrow activity</li>
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );

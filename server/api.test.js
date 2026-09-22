@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import { createApp, isDirectRun } from './index.js';
+import { resolveSupabaseCredentials } from './database.js';
 
 test('API exposes jobs and auth endpoints', async () => {
   const app = createApp();
@@ -62,4 +63,31 @@ test('Direct server startup detection works with Windows and Unix path separator
   assert.equal(isDirectRun(currentFile), true);
   assert.equal(isDirectRun(linuxStyle), true);
   assert.equal(isDirectRun('D:\\other\\file.js'), false);
+});
+
+test('Production Supabase config prefers a real service-role key over the anon key', () => {
+  const previous = {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  };
+
+  try {
+    process.env.SUPABASE_URL = 'https://project.supabase.co';
+    process.env.SUPABASE_ANON_KEY = 'anon-key';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-key';
+
+    const config = resolveSupabaseCredentials();
+    assert.equal(config.url, 'https://project.supabase.co');
+    assert.equal(config.key, 'service-role-key');
+    assert.equal(config.serviceRoleKey, 'service-role-key');
+  } finally {
+    Object.entries(previous).forEach(([key, value]) => {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    });
+  }
 });

@@ -68,6 +68,23 @@ const defaultUsers = [
 const memoryJobs = [...defaultJobs];
 const memoryUsers = [...defaultUsers];
 
+function resolveSupabaseCredentials() {
+  const url = String(process.env.SUPABASE_URL || '').trim();
+  const anonKey = String(process.env.SUPABASE_ANON_KEY || '').trim();
+  const serviceRoleKey = String(process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+
+  const selectedKey = serviceRoleKey || anonKey;
+  const validUrl = url && url.includes('supabase.co') && url !== 'https://your-project-ref.supabase.co';
+  const validKey = selectedKey && selectedKey !== 'your-anon-key' && selectedKey !== 'your-service-role-key';
+
+  return {
+    url: validUrl ? url : '',
+    key: validUrl && validKey ? selectedKey : '',
+    anonKey,
+    serviceRoleKey,
+  };
+}
+
 function createMemoryStore() {
   return {
     provider: 'memory',
@@ -120,8 +137,7 @@ function createMemoryStore() {
 }
 
 function createSupabaseStore() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  const { url: supabaseUrl, key: supabaseKey } = resolveSupabaseCredentials();
 
   if (!supabaseUrl || !supabaseKey) {
     return createMemoryStore();
@@ -192,16 +208,12 @@ function createSupabaseStore() {
 }
 
 function hasValidSupabaseConfig() {
-  const url = String(process.env.SUPABASE_URL || '').trim();
-  const key = String(process.env.SUPABASE_ANON_KEY || '').trim();
+  const credentials = resolveSupabaseCredentials();
 
   return (
     process.env.USE_SUPABASE === 'true' &&
-    url.length > 0 &&
-    url.includes('supabase.co') &&
-    url !== 'https://your-project-ref.supabase.co' &&
-    key.length > 0 &&
-    key !== 'your-anon-key'
+    Boolean(credentials.url) &&
+    Boolean(credentials.key)
   );
 }
 
@@ -209,4 +221,12 @@ function createDatabaseStore() {
   return hasValidSupabaseConfig() ? createSupabaseStore() : createMemoryStore();
 }
 
-export { createDatabaseStore, createMemoryStore, createSupabaseStore, defaultJobs, defaultUsers, hashPassword };
+export {
+  createDatabaseStore,
+  createMemoryStore,
+  createSupabaseStore,
+  defaultJobs,
+  defaultUsers,
+  hashPassword,
+  resolveSupabaseCredentials,
+};
