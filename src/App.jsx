@@ -539,274 +539,339 @@ function AuthPage({ onLogin, onSignup }) {
   );
 }
 
-function HomePage({ jobs, services }) {
+function HomePage() {
+  const platformTiles = [
+    {
+      group: 'BUSINESS TOOLS',
+      items: ['Website', 'Booking', 'WhatsApp', 'Menu', 'Invoices', 'Dashboard'],
+    },
+    {
+      group: 'CUSTOMER TOOLS',
+      items: ['Browse', 'Book Service', 'Order Food', 'Request Quote', 'Pay'],
+    },
+    {
+      group: 'KAZILINK',
+      items: ['Post a Job', 'Find Worker', 'Send Quote', 'Reviews', 'Messaging'],
+    },
+  ];
+
+  const featureCards = [
+    {
+      title: 'Business Website Builder',
+      emoji: '🏢',
+      body: 'Logo, About, Services, Products, Gallery, Location, Opening hours, Contact, WhatsApp button, and Social media.',
+    },
+    {
+      title: 'Booking System',
+      emoji: '📅',
+      body: 'Customers select a service, date, time, and details before confirming a booking and receiving a WhatsApp notification.',
+    },
+    {
+      title: 'WhatsApp Business Integration',
+      emoji: '💬',
+      body: 'Every action can lead to WhatsApp with auto-generated messages like “Book via WhatsApp” and “Request a quote.”',
+    },
+    {
+      title: 'Digital Menu + Ordering',
+      emoji: '🍔',
+      body: 'QR code menus, cart flow, pickup or delivery, and order confirmations via WhatsApp for restaurants and food vendors.',
+    },
+    {
+      title: 'Invoice + Quotation Generator',
+      emoji: '🧾',
+      body: 'Generate quotes, convert them to invoices, and send them as PDF or WhatsApp instantly.',
+    },
+    {
+      title: 'KaziLink Marketplace',
+      emoji: '🔥',
+      body: 'Clients post jobs, freelancers submit quotes, and businesses and service providers match on one Kazi account.',
+    },
+  ];
+
+  const pricingTiers = [
+    {
+      name: 'Free',
+      price: 'KSh 0',
+      period: '/month',
+      features: ['Basic profile', 'Business page', 'Simple contact details'],
+    },
+    {
+      name: 'Starter',
+      price: 'KSh 1,000',
+      period: '/month',
+      highlight: true,
+      features: ['Business page', 'WhatsApp', 'Services & products', 'Basic booking', 'Basic invoices'],
+    },
+    {
+      name: 'Professional',
+      price: 'KSh 2,500',
+      period: '/month',
+      features: ['Everything in Starter', 'Online ordering', 'Advanced bookings', 'Quotations', 'Analytics'],
+    },
+    {
+      name: 'Business',
+      price: 'KSh 5,000',
+      period: '/month',
+      features: ['Custom domain', 'Advanced dashboard', 'Staff accounts', 'Customer management', 'Priority support'],
+    },
+  ];
+
+  const salesMessages = [
+    'For salons: Get your salon online and let customers book appointments through WhatsApp.',
+    'For restaurants: Turn your menu into an online ordering system.',
+    'For freelancers: Find clients and showcase your services.',
+    'For small businesses: Create professional quotations and invoices in seconds.',
+    'For service providers: Get discovered and receive bookings online.',
+  ];
+
   return (
     <>
-      <section className="hero section">
-        <div className="hero-copy">
-          <span className="eyebrow">Post it. Find the right person. Get it done.</span>
-          <h1>Reliable jobs and trusted talent across Kenya.</h1>
+      <section className="hero-band">
+        <div className="hero-copy-wrap">
+          <span className="eyebrow">One platform. Different sales messages.</span>
+          <h1>Turn every business into a digital brand that sells on WhatsApp, online, and through bookings.</h1>
           <p>
-            From website design and plumbing to events, tutoring, and home repairs, KaziLink helps clients and freelancers connect fast.
+            KaziLink helps businesses create their online presence, take appointments, receive orders, send quotes,
+            and connect with customers through a single, simple system built for Kenya.
           </p>
 
-          <div className="search-box" aria-label="Search jobs">
-            <span className="search-icon">⌕</span>
-            <input type="text" value="What do you need done?" readOnly />
-            <Link className="btn btn-primary" to="/jobs">Search</Link>
-          </div>
-
           <div className="cta-row">
-            <Link className="btn btn-primary large" to="/post-job">Post a Job</Link>
-            <Link className="btn btn-secondary large" to="/auth">Become a Freelancer</Link>
+            <Link className="btn btn-primary large" to="/auth">Get Started</Link>
+            <Link className="btn btn-secondary large" to="/jobs">Explore Marketplace</Link>
           </div>
 
           <div className="trust-row">
-            <span>✅ M-Pesa ready</span>
-            <span>✅ Nairobi + counties</span>
-            <span>✅ Verified profiles</span>
+            <span>✅ Business pages</span>
+            <span>✅ WhatsApp sales flow</span>
+            <span>✅ Online booking</span>
+            <span>✅ Marketplace jobs</span>
           </div>
         </div>
 
-        <div className="hero-panel">
-          <div className="mini-card card-featured">
-            <div className="card-head">
-              <span className="dot green" />
-              <span>Featured job</span>
+        <div className="hero-visual">
+          <div className="screen-card">
+            <div className="topline">
+              <span className="green-dot" />
+              <span>KAZILINK</span>
             </div>
-            <h3>{jobs[0]?.title || 'Website Designer Needed'}</h3>
-            <div className="meta-row">
-              <span>{jobs[0]?.location || 'Nairobi'} / Remote</span>
-              <span>Budget: {jobs[0]?.budget || 'KSh 40,000'}</span>
+            <h3>Good morning, Miriam</h3>
+            <div className="mini-stats-grid">
+              <div>
+                <strong>12</strong>
+                <span>Bookings</span>
+              </div>
+              <div>
+                <strong>24</strong>
+                <span>Orders</span>
+              </div>
+              <div>
+                <strong>45,800</strong>
+                <span>Revenue</span>
+              </div>
             </div>
-            <div className="proposal-box">
-              <strong>{jobs[0]?.applicants || 12} proposals</strong>
-              <small>Posted {jobs[0]?.posted || '2 hours ago'}</small>
+            <div className="quick-actions">
+              <span>+ Create Invoice</span>
+              <span>+ Create Quotation</span>
+              <span>+ Add Product</span>
+              <span>+ Post Kazi</span>
             </div>
-          </div>
-
-          <div className="mini-card freelancer-card">
-            <div className="avatar">MA</div>
-            <div>
-              <h4>Mercy Achieng</h4>
-              <p>Web Designer • 4.9 ★</p>
-            </div>
-            <Link className="btn btn-primary small" to="/freelancer-profile">Hire Me</Link>
           </div>
         </div>
       </section>
 
-      <section className="stats section">
-        {stats.map((stat) => (
-          <div key={stat.label} className="stat-box">
-            <strong>{stat.value}</strong>
-            <span>{stat.label}</span>
-          </div>
-        ))}
-      </section>
-
-      <section id="categories" className="section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">Popular categories</span>
-            <h2>Find the right skill for the job</h2>
-          </div>
-          <Link className="btn btn-ghost" to="/jobs">Browse all</Link>
-        </div>
-
-        <div className="category-grid">
-          {categories.map((category) => (
-            <article key={category.name} className="category-card">
-              <span className="category-icon">{category.icon}</span>
-              <h3>{category.name}</h3>
-              <p>{category.jobs}</p>
-            </article>
+      <section className="section-block three-column-section">
+        <div className="structure-grid">
+          {platformTiles.map((tile) => (
+            <div key={tile.group} className="structure-card">
+              <span className="card-label">{tile.group}</span>
+              <ul>
+                {tile.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="section trust-section">
+      <section className="section-block feature-split">
+        <div className="feature-copy">
+          <span className="eyebrow">Business website builder</span>
+          <h2>Give every business its own profile page and online storefront.</h2>
+          <ul className="feature-list">
+            <li>Logo</li>
+            <li>About</li>
+            <li>Services</li>
+            <li>Products</li>
+            <li>Gallery</li>
+            <li>Location</li>
+            <li>Opening hours</li>
+            <li>Contact</li>
+            <li>WhatsApp button</li>
+            <li>Social media</li>
+          </ul>
+        </div>
+
+        <div className="feature-visual">
+          <div className="mock-card">
+            <div className="mock-header">
+              <span className="brand-pill">Mimi’s Salon</span>
+              <span className="status-chip">Open today</span>
+            </div>
+            <h3>Professional beauty business website</h3>
+            <div className="mock-gallery">
+              <span>Hair</span>
+              <span>Braids</span>
+              <span>Manicure</span>
+            </div>
+            <div className="mock-pricing">
+              <strong>From KSh 2,500</strong>
+              <button type="button" className="btn btn-primary small">Book via WhatsApp</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-block">
         <div className="section-heading center">
-          <span className="eyebrow">Why KaziLink?</span>
-          <h2>Built to feel trustworthy, commercial, and scalable</h2>
+          <span className="eyebrow">Built for real business needs</span>
+          <h2>Everything businesses need to sell online</h2>
         </div>
 
-        <div className="trust-grid">
-          <div className="trust-panel">
-            <h3>✓ Verified professionals</h3>
-            <p>Phone, email and profile verification help clients hire with more confidence.</p>
-          </div>
-          <div className="trust-panel">
-            <h3>✓ Local & remote</h3>
-            <p>Hire someone in Nairobi or work with remote specialists across Kenya.</p>
-          </div>
-          <div className="trust-panel">
-            <h3>✓ Transparent pricing</h3>
-            <p>Costs, fees and milestones are visible before work starts.</p>
-          </div>
-          <div className="trust-panel">
-            <h3>✓ Secure communication</h3>
-            <p>Projects and conversations stay inside the platform until the work is approved.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="jobs" className="section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">Featured jobs</span>
-            <h2>Fresh opportunities near you</h2>
-          </div>
-          <Link className="btn btn-ghost" to="/jobs">Browse jobs</Link>
-        </div>
-
-        <div className="jobs-grid">
-          {jobs.map((job) => (
-            <article key={job.id} className="job-card">
-              <div className="job-topline">
-                <span className="tag">{job.category}</span>
-                <span className="tag soft">{job.type}</span>
-              </div>
-              <h3>{job.title}</h3>
-              <p>{job.description}</p>
-              <div className="job-meta">
-                <span>📍 {job.location}</span>
-                <span>💰 {job.budget}</span>
-              </div>
-              <div className="job-footer">
-                <small>{job.posted}</small>
-                <Link className="btn btn-primary small" to={`/job-details/${job.id}`}>Apply</Link>
-              </div>
+        <div className="feature-grid">
+          {featureCards.map((card) => (
+            <article key={card.title} className="info-card">
+              <div className="icon-box">{card.emoji}</div>
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="section marketplace-section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">Services marketplace</span>
-            <h2>Browse services, not just jobs</h2>
+      <section className="section-block marketplace-block">
+        <div className="marketplace-copy">
+          <span className="eyebrow">KaziLink marketplace</span>
+          <h2>Customers post work. Freelancers respond. Businesses grow.</h2>
+          <p>
+            A customer can post: “I need a graphic designer” with budget, location, and deadline. Freelancers see the
+            job, submit proposals, and the customer chooses the right fit.
+          </p>
+          <div className="quote-box">
+            <strong>Example job</strong>
+            <p>I need a graphic designer</p>
+            <small>Budget: KSh 10,000 • Location: Nairobi • Deadline: 5 days</small>
           </div>
-          <Link className="btn btn-ghost" to="/jobs">View marketplace</Link>
         </div>
 
-        <div className="services-grid">
-          {services.map((service) => (
-            <article key={service.title} className={`service-card ${service.accent}`}>
-              <div className="service-top">
-                <span className="service-badge">Service</span>
-                <span className="service-rating">⭐ {service.rating}</span>
-              </div>
-              <h3>{service.title}</h3>
-              <p>{service.provider}</p>
-              <small>{service.description}</small>
-              <div className="service-bottom">
-                <strong>{service.price}</strong>
-                <button type="button" className="btn btn-primary small">View Service</button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="how-it-works" className="section">
-        <div className="section-heading center">
-          <span className="eyebrow">How KaziLink works</span>
-          <h2>Simple, transparent, and built for real work</h2>
-        </div>
-
-        <div className="steps-grid">
-          {steps.map((step) => (
-            <div key={step.number} className="step-card">
-              <div className="step-number">{step.number}</div>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
+        <div className="marketplace-panel">
+          <div className="job-sample">
+            <div className="sample-head">
+              <span className="tag">Web Development</span>
+              <span className="tag tag-soft">Remote</span>
             </div>
-          ))}
+            <h3>Business Website Redesign</h3>
+            <p>Need a modern, responsive business website for a growing retail brand.</p>
+            <div className="job-meta-line">
+              <span>📍 Nairobi</span>
+              <span>💰 KSh 35,000 - 55,000</span>
+            </div>
+            <div className="job-actions">
+              <button type="button" className="btn btn-primary small">Send Proposal</button>
+              <button type="button" className="btn btn-ghost small">Save</button>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section-block dashboard-section">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">Top freelancers</span>
-            <h2>Trusted professionals ready to work</h2>
+            <span className="eyebrow">Your dashboard</span>
+            <h2>Everything in one place for business owners and freelancers</h2>
           </div>
-          <Link className="btn btn-ghost" to="/freelancer-profile">View all</Link>
         </div>
 
-        <div className="freelancers-grid">
-          {topFreelancers.map((person) => (
-            <article key={person.name} className={`freelancer-card ${person.accent}`}>
-              <div className="avatar big">{initialsFromName(person.name)}</div>
-              <h3>{person.name}</h3>
-              <p className="role">{person.role}</p>
-              <p className="specialty">{person.specialty}</p>
-              <div className="mini-stats">
-                <span>⭐ {person.rating}</span>
-                <span>{person.jobs} jobs</span>
-              </div>
-              <div className="bottom-row">
-                <span>{person.location}</span>
-                <strong>{person.price}</strong>
-              </div>
-              <Link className="btn btn-primary small full" to="/freelancer-profile">Hire Me</Link>
-            </article>
-          ))}
+        <div className="dashboard-layout">
+          <div className="dashboard-card large">
+            <div className="dashboard-header">
+              <span className="brand-pill">BIZFLOW</span>
+              <span className="status-chip">Good morning, Miriam</span>
+            </div>
+            <div className="dashboard-metrics">
+              <div><strong>12</strong><span>Bookings</span></div>
+              <div><strong>24</strong><span>Orders</span></div>
+              <div><strong>45,800</strong><span>Revenue</span></div>
+            </div>
+            <div className="dashboard-actions">
+              <span>Create Invoice</span>
+              <span>Create Quotation</span>
+              <span>Add Product</span>
+              <span>View Bookings</span>
+              <span>Post Kazi</span>
+            </div>
+          </div>
+
+          <div className="dashboard-card">
+            <h3>One Kazi account</h3>
+            <ul className="minimal-list">
+              <li>Business owner</li>
+              <li>Freelancer</li>
+              <li>Customer</li>
+              <li>Multiple roles</li>
+            </ul>
+          </div>
         </div>
       </section>
 
-      <section id="pricing" className="section pricing-section">
+      <section className="section-block pricing-section">
         <div className="section-heading center">
-          <span className="eyebrow">Business model</span>
-          <h2>Simple fees for a reliable marketplace</h2>
+          <span className="eyebrow">How you make money</span>
+          <h2>Simple plans built for growing businesses</h2>
         </div>
 
         <div className="pricing-grid">
-          <div className="pricing-card">
-            <h3>Freelancer Premium</h3>
-            <div className="price">KSh 2,500<span>/month</span></div>
-            <ul>
-              <li>Featured profile placement</li>
-              <li>More job applications</li>
-              <li>Better visibility</li>
-              <li>Portfolio promotion</li>
-            </ul>
-            <button className="btn btn-primary" type="button">Join Premium</button>
-          </div>
-
-          <div className="pricing-card highlight">
-            <h3>Typical platform fee</h3>
-            <div className="price">10%<span>per job</span></div>
-            <ul>
-              <li>Example: KSh 20,000 job</li>
-              <li>Platform fee: KSh 2,000</li>
-              <li>Freelancer receives: KSh 18,000</li>
-              <li>Powered by secure payments</li>
-            </ul>
-            <button className="btn btn-secondary" type="button">Learn more</button>
-          </div>
+          {pricingTiers.map((tier) => (
+            <article key={tier.name} className={`price-card ${tier.highlight ? 'highlight' : ''}`}>
+              <h3>{tier.name}</h3>
+              <div className="price-number">
+                {tier.price}
+                <span>{tier.period}</span>
+              </div>
+              <ul>
+                {tier.features.map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+              <button type="button" className={`btn ${tier.highlight ? 'btn-primary' : 'btn-ghost'}`}>
+                {tier.name === 'Free' ? 'Start free' : 'Choose plan'}
+              </button>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section className="section testimonials-section">
+      <section className="section-block sales-section">
         <div className="section-heading center">
-          <span className="eyebrow">Client stories</span>
-          <h2>People use KaziLink every day</h2>
+          <span className="eyebrow">Client acquisition strategy</span>
+          <h2>Target each audience with a different sales message</h2>
         </div>
 
-        <div className="testimonials-grid">
-          {testimonials.map((person) => (
-            <blockquote key={person.name} className="testimonial-card">
-              <p>“{person.quote}”</p>
-              <footer>
-                <strong>{person.name}</strong>
-                <span>{person.role}</span>
-              </footer>
-            </blockquote>
+        <div className="sales-messages">
+          {salesMessages.map((message) => (
+            <div key={message} className="sales-message">
+              {message}
+            </div>
           ))}
         </div>
+      </section>
+
+      <section className="section-block cta-banner">
+        <div>
+          <span className="eyebrow">Ready to launch?</span>
+          <h2>One platform. Different business growth paths.</h2>
+        </div>
+        <Link className="btn btn-primary large" to="/auth">Build your KaziLink</Link>
       </section>
     </>
   );
